@@ -26,12 +26,12 @@ var multerUpload = multer({
   storage: storage
 });
 
-var uploadFile = multerUpload.single('userFile');
+var uploadFile = multerUpload.single('upfile');
 
 var app = express();
 
 const mongoose = require('mongoose')
-mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
+mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/multipart-file-meta' )
 
 
 // define schema
@@ -57,33 +57,39 @@ app.get('/hello', function(req, res){
   res.json({greetings: "Hello, API"});
 });
 
+
 app.post('/api/fileanalyse', function(req, res) {
-  uploadFile(req, res, function(err) {
+    uploadFile(req, res, function(err) {
+      
+      console.log(req);
+      
+      
       if (err) {
         // An error occurred when uploading 
-        res.send(err);
+        log.error(err);
       }
       // Everything went fine 
       var fileDetails = {
-        name: req.file.originalname,
-        size: req.file.size,
+        name: req.upfile.originalname,
+        size: req.upfile.size,
         date: new Date().toLocaleString(),
-        file: req.file.filename
+        file: req.upfile.filename
       };
       // save file to db
-      // var file = new File(fileDetails);
-      // file.save(function(err, file) {
-      //   if (err) {
-      //     log.error(err);
-      //     throw err;
-      //   }
-      //   log.info('Saved', file);
-      // });
-      // var filePath = "./uploads/" + req.file.filename; 
-      // fs.unlinkSync(filePath);
+      var file = new File(fileDetails);
+      file.save(function(err, file) {
+        if (err) {
+          log.error(err);
+          throw err;
+        }
+        log.info('Saved', file);
+      });
+      var filePath = "./uploads/" + req.file.filename; 
+      fs.unlinkSync(filePath);
       res.send(fileDetails);
     });
-})
+  });
+
 
 app.listen(process.env.PORT || 3000, function () {
   console.log('Node.js listening ...');
