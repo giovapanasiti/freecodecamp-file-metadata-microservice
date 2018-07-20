@@ -1,39 +1,23 @@
-// server.js
-// where your node app starts
+'use strict';
 
-// init project
-const express = require('express')
-const app = express()
+var express = require('express');
+var cors = require('cors');
 
-// we've started you off with Express, 
-// but feel free to use whatever libs or frameworks you'd like through `package.json`.
+// require and use "multer"...
 
-// http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'))
+var app = express();
 
-// http://expressjs.com/en/starter/basic-routing.html
-app.get("/", (request, response) => {
-  response.sendFile(__dirname + '/views/index.html')
-})
+app.use(cors());
+app.use('/public', express.static(process.cwd() + '/public'));
 
-// Simple in-memory store
-const dreams = [
-  "Find and count some sheep",
-  "Climb a really tall mountain",
-  "Wash the dishes"
-]
+app.get('/', function (req, res) {
+     res.sendFile(process.cwd() + '/views/index.html');
+  });
 
-app.get("/dreams", (request, response) => {
-  response.send(dreams)
-})
+app.get('/hello', function(req, res){
+  res.json({greetings: "Hello, API"});
+});
 
-// could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
-app.post("/dreams", (request, response) => {
-  dreams.push(request.query.dream)
-  response.sendStatus(200)
-})
-
-// listen for requests :)
-const listener = app.listen(process.env.PORT, () => {
-  console.log(`Your app is listening on port ${listener.address().port}`)
-})
+app.listen(process.env.PORT || 3000, function () {
+  console.log('Node.js listening ...');
+});
