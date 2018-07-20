@@ -41,7 +41,20 @@ app.post('/upload', upload.single("upfile"), function(req, res) {
   
     console.log(req.file)
     
-    if 
+    const theFile = req.file
+  
+    if (theFile) {
+      var fileDetails = {
+        name: theFile.originalname,
+        size: theFile.size,
+        date: new Date().toLocaleString(),
+        file: theFile.filename
+      };
+      
+      return res.send(fileDetails)
+    }
+  
+    return res.send({error: 'file must be present'})
 
   });
 
