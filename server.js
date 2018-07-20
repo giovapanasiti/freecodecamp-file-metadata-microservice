@@ -3,8 +3,9 @@
 var express = require('express');
 var cors = require('cors');
 var multer = require('multer');
-
-
+var log = require('npmlog');
+var fs = require('fs');
+// File Upload related stuff
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, 'uploads/');
@@ -24,9 +25,26 @@ var storage = multer.diskStorage({
 var multerUpload = multer({
   storage: storage
 });
+
 var uploadFile = multerUpload.single('userFile');
 
 var app = express();
+
+const mongoose = require('mongoose')
+mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
+
+
+// define schema
+
+var Schema = mongoose.Schema;
+var fileSchema = new Schema({
+  name: String,
+  size: Number,
+  date: String
+});
+
+var File = mongoose.model('File', fileSchema);
+
 
 app.use(cors());
 app.use('/public', express.static(process.cwd() + '/public'));
